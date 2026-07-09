@@ -1,0 +1,1293 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Java 转码暑假每日任务表</title>
+  <script>
+    if (new URLSearchParams(location.search).get("note") === "1") {
+      document.documentElement.classList.add("note-mode");
+    }
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #647084;
+      --line: #dce2ea;
+      --green: #1f7a5b;
+      --blue: #2d6298;
+      --yellow: #f6e8cc;
+      --yellow-ink: #8a5a12;
+      --soft-green: #eaf4ef;
+      --soft-blue: #edf3fb;
+      --shadow: 0 12px 32px rgba(19, 31, 50, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    header {
+      padding: 28px clamp(16px, 4vw, 50px);
+      background: #10223a;
+      color: white;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(25px, 4vw, 42px);
+      letter-spacing: 0;
+    }
+
+    header p {
+      max-width: 920px;
+      margin-bottom: 0;
+      color: #d8e2ed;
+    }
+
+    main {
+      width: min(1280px, calc(100% - 28px));
+      margin: 18px auto 42px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 430px;
+      gap: 18px;
+    }
+
+    section, aside, .day-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    button, input[type="date"], select {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: white;
+      color: var(--ink);
+      padding: 8px 12px;
+      font: inherit;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button.primary {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+
+    button:hover { filter: brightness(0.98); }
+
+    .today { padding: 18px; margin-bottom: 16px; }
+
+    .topline {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+
+    .topline h2 {
+      margin: 0;
+      font-size: clamp(21px, 3vw, 28px);
+      letter-spacing: 0;
+    }
+
+    .phase {
+      color: var(--muted);
+      margin: 4px 0 0;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 16px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: var(--soft-green);
+      color: #14523d;
+      font-size: 13px;
+    }
+
+    .tag.blue { background: var(--soft-blue); color: #234d83; }
+    .tag.warn { background: var(--yellow); color: var(--yellow-ink); }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .time-block {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: #fbfcfe;
+    }
+
+    .time-block strong { display: block; }
+    .time-block small { color: var(--muted); }
+
+    .task-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcfe;
+    }
+
+    .task input {
+      width: 20px;
+      height: 20px;
+      margin: 3px 0 0;
+      accent-color: var(--green);
+    }
+
+    .task strong { display: block; }
+    .task small { color: var(--muted); }
+
+    .note-box, .repo-box, .github-box {
+      margin-top: 14px;
+      border-radius: 6px;
+      padding: 12px;
+      background: #f8fbff;
+      border-left: 4px solid var(--blue);
+    }
+
+    .note-box { background: #fffaf0; border-left-color: #c27a1a; }
+
+    .github-box {
+      background: #f7fbf8;
+      border-left-color: var(--green);
+    }
+
+    .github-box h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .github-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .github-card {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.74);
+    }
+
+    .github-card strong,
+    .github-card code {
+      display: block;
+    }
+
+    .github-card code {
+      margin: 6px 0;
+      color: #34506d;
+      white-space: normal;
+      word-break: break-all;
+    }
+
+    .github-card small,
+    .github-box li {
+      color: var(--muted);
+    }
+
+    .guide-panel {
+      margin-bottom: 16px;
+    }
+
+    .guide-panel .github-box {
+      margin-top: 0;
+      padding: 14px;
+    }
+
+    .guide-section {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .guide-section h4 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .guide-section ol,
+    .guide-section ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .guide-section li {
+      margin: 6px 0;
+    }
+
+    .inline-guide {
+      display: none;
+    }
+
+    .repo-box {
+      display: none;
+    }
+
+    aside {
+      padding: 16px;
+      align-self: start;
+      position: sticky;
+      top: 16px;
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+    }
+
+    aside h2, .week h2 { font-size: 21px; margin-bottom: 10px; }
+
+    .progress {
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e7ecf2;
+      margin: 10px 0 12px;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--green);
+      transition: width 0.2s ease;
+    }
+
+    .repo-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .repo-list li { margin: 8px 0; }
+    a { color: #225f9e; }
+
+    .week {
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .days {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+    }
+
+    .day-card {
+      padding: 12px;
+      box-shadow: none;
+    }
+
+    .day-card.active {
+      border-color: var(--green);
+      background: #f8fdfa;
+    }
+
+    .day-card h3 {
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .day-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .empty {
+      padding: 18px;
+      color: var(--muted);
+    }
+
+    .footer-tip {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+      aside { position: static; }
+      .topline { display: block; }
+    }
+
+    .note-mode body {
+      background: #f4d978;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    .note-mode header,
+    .note-mode .week,
+    .note-mode #phasePicker,
+    .note-mode #exportBtn {
+      display: none;
+    }
+
+    .note-mode aside {
+      display: none;
+    }
+
+    .note-mode main {
+      width: 100vw;
+      max-width: none;
+      min-height: 100vh;
+      margin: 0;
+      display: block;
+      background: #ffe58a;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .note-mode section,
+    .note-mode .today {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    .note-mode .toolbar {
+      margin: 0;
+      padding: 12px;
+      gap: 8px;
+      border-bottom: 1px solid rgba(111, 80, 16, 0.16);
+    }
+
+    .note-mode button,
+    .note-mode input[type="date"] {
+      min-height: 34px;
+      padding: 6px 9px;
+      border-color: rgba(111, 80, 16, 0.22);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .note-mode button.primary {
+      background: #1f7a5b;
+      color: white;
+    }
+
+    .note-mode .today {
+      padding: 16px;
+      margin: 0;
+      max-width: 860px;
+    }
+
+    .note-mode .topline h2 {
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .note-mode .phase,
+    .note-mode .repo-box,
+    .note-mode .note-box,
+    .note-mode .github-box {
+      color: #68521c;
+    }
+
+    .note-mode .meta,
+    .note-mode .time-grid {
+      display: none;
+    }
+
+    .note-mode .task-list {
+      gap: 9px;
+    }
+
+    .note-mode .task {
+      background: rgba(255, 255, 255, 0.56);
+      border-color: rgba(111, 80, 16, 0.16);
+    }
+
+    .note-mode .task small {
+      color: #5f501f;
+    }
+
+    .note-mode .repo-box,
+    .note-mode .note-box,
+    .note-mode .github-box {
+      background: rgba(255, 255, 255, 0.42);
+      border-left-color: #b7791f;
+    }
+
+    .note-mode .github-grid {
+      display: block;
+    }
+
+    .note-mode .github-card {
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.46);
+      border-color: rgba(111, 80, 16, 0.16);
+    }
+
+    .note-mode .inline-guide {
+      display: block;
+    }
+
+    .note-mode .guide-section {
+      border-top-color: rgba(111, 80, 16, 0.16);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Java 后端 + AI Agent 暑假每日任务表</h1>
+    <p>计划周期：2026-07-10 到 2026-09-05，周日休息。主线是 Java 后端就业能力，后期叠加 AI Agent / RAG 项目亮点。</p>
+  </header>
+
+  <main>
+    <div>
+      <section class="toolbar" aria-label="日期工具栏">
+        <button class="primary" id="todayBtn">今天</button>
+        <button id="prevBtn">前一天</button>
+        <button id="nextBtn">后一天</button>
+        <input type="date" id="datePicker" min="2026-07-10" max="2026-09-05" />
+        <select id="phasePicker" aria-label="阶段跳转"></select>
+        <button id="resetDayBtn" title="只清空当前日期的勾选状态">重置当天</button>
+        <button id="exportBtn">导出 Markdown</button>
+      </section>
+
+      <section class="today" id="todayPanel"></section>
+      <section class="week" id="weekPanel"></section>
+    </div>
+
+    <aside>
+      <div class="guide-panel" id="guidePanel"></div>
+      <h2>总进度</h2>
+      <div class="progress"><span id="progressBar"></span></div>
+      <p id="progressText">0 / 0</p>
+
+      <h2>每日硬指标</h2>
+      <p>代码 150-300 行，算法 1-2 题，Git 至少 1 次提交，复盘 3 个卡点。</p>
+
+      <h2>参考项目</h2>
+      <ol class="repo-list">
+        <li><a href="https://github.com/macrozheng/mall" target="_blank">macrozheng/mall</a>：电商后端主参考。</li>
+        <li><a href="https://github.com/dromara/RuoYi-Vue-Plus" target="_blank">RuoYi-Vue-Plus</a>：权限、后台、工程规范。</li>
+        <li><a href="https://github.com/alibaba/spring-ai-alibaba" target="_blank">spring-ai-alibaba</a>：Java Agent 与 RAG。</li>
+        <li><a href="https://github.com/langchain4j/langchain4j-examples" target="_blank">langchain4j-examples</a>：Java LLM 应用示例。</li>
+        <li><a href="https://github.com/apache/flink-training" target="_blank">flink-training</a>：数据开发备选线。</li>
+        <li><code>C:\javaSummer\github-references</code>：所有参考仓库的本地路径。</li>
+      </ol>
+
+      <h2>中文学习环境</h2>
+      <div class="github-box">
+        <p><strong>IDEA：</strong>已安装官方中文语言包，打开 IDEA 后在设置里切换到简体中文。</p>
+        <p><strong>GitHub：</strong>官网没有官方中文界面，已下载第三方中文化项目到本地，建议先阅读说明再决定是否安装脚本。</p>
+        <div class="guide-section">
+          <h4>本地入口</h4>
+          <ul>
+            <li><code>C:\javaSummer\docs\cn-learning-environment.md</code></li>
+            <li><code>C:\javaSummer\github-references\github-chinese</code></li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const START = "2026-07-10";
+    const END = "2026-09-05";
+    const MS_DAY = 24 * 60 * 60 * 1000;
+
+    const phases = [
+      ["2026-07-10", "2026-07-11", "能力校准"],
+      ["2026-07-13", "2026-07-18", "Java 手写能力强化"],
+      ["2026-07-20", "2026-07-25", "数据库 + MyBatis"],
+      ["2026-07-27", "2026-08-01", "Spring Boot 过渡"],
+      ["2026-08-03", "2026-08-08", "后端项目启动"],
+      ["2026-08-10", "2026-08-15", "登录鉴权与 Redis"],
+      ["2026-08-17", "2026-08-22", "工程化"],
+      ["2026-08-24", "2026-08-29", "AI Agent 加分"],
+      ["2026-08-31", "2026-09-05", "简历化与面试准备"]
+    ];
+
+    const timeBlocks = [
+      ["09:00-10:00", "看参考代码", "只看今天要写的那一小块"],
+      ["10:00-12:00", "关掉参考复写", "从空文件写出同类代码"],
+      ["14:00-16:00", "变式开发", "改需求、改领域、改边界条件"],
+      ["16:00-17:00", "算法手写", "Java 写 1-2 题，不只看题解"],
+      ["20:00-21:00", "复盘提交", "写卡点、补 README、提交 Git"]
+    ];
+
+    const githubGuides = {
+      "能力校准": {
+        watch: [
+          ["JavaGuide", "C:\\javaSummer\\github-references\\JavaGuide", "只查 ArrayList、面向对象、异常、集合。今天不要看 JVM、并发、分布式。"],
+          ["mall-tiny", "C:\\javaSummer\\github-references\\mall-tiny\\src\\main\\java\\com\\macro\\mall\\tiny\\modules\\ums", "看 model、service、controller 的命名方式，把它简化成 model / service / app。"],
+          ["leetcode-day01", "C:\\javaSummer\\github-references\\leetcode-day01\\solution\\0000-0099", "只看 0001.Two Sum 和 0027.Remove Element，先自己写，再对照。"]
+        ],
+        borrow: ["用 List 保存对象", "把字段、业务方法、启动入口分开", "README 写清楚今天产出"],
+        avoid: "不要启动 Spring Boot，不要学 Redis，不要把时间花在配置环境上。",
+        output: "3 个纯 Java 控制台程序 + 2 道数组题 + day review。"
+      },
+      "Java 手写能力强化": {
+        watch: [
+          ["JavaGuide", "C:\\javaSummer\\github-references\\JavaGuide\\docs\\java", "补集合、IO、异常、Stream；遇到不会写的语法再查。"],
+          ["mall-tiny common", "C:\\javaSummer\\github-references\\mall-tiny\\src\\main\\java\\com\\macro\\mall\\tiny\\common", "看 CommonResult、异常类的思想，今天用简化版 BizException。"],
+          ["mall-tiny ums model/service", "C:\\javaSummer\\github-references\\mall-tiny\\src\\main\\java\\com\\macro\\mall\\tiny\\modules\\ums", "学习实体类、Service 接口、ServiceImpl 的职责边界。"]
+        ],
+        borrow: ["实体类只放数据", "Service 负责业务判断", "异常用业务异常表达而不是到处 println"],
+        avoid: "不要复制 mall-tiny 的 Spring 注解；今天目标仍是纯 Java 手写。",
+        output: "学生管理系统 v1，并能改写成图书/商品/订单变式。"
+      },
+      "数据库 + MyBatis": {
+        watch: [
+          ["mall SQL", "C:\\javaSummer\\github-references\\mall\\document\\sql", "看表命名、主键、业务字段、订单表结构，不用照抄复杂字段。"],
+          ["mall-tiny mapper", "C:\\javaSummer\\github-references\\mall-tiny\\src\\main\\resources\\mapper\\ums", "看 XML 的 select/insert/update/delete 怎么组织。"],
+          ["mall-tiny model/mapper", "C:\\javaSummer\\github-references\\mall-tiny\\src\\main\\java\\com\\macro\\mall\\tiny\\modules\\ums", "看 model 与 mapper 一一对应的方式。"]
+        ],
+        borrow: ["表按业务模块命名", "Mapper 只做数据库访问", "分页、条件查询、事务要能讲清楚"],
+        avoid: "不要今天就引入复杂代码生成器，先手写 SQL 和 Mapper。",
+        output: "MySQL 版学生管理 + 商品订单表设计 + 10 条业务 SQL。"
+      },
+      "Spring Boot 过渡": {
+        watch: [
+          ["mall-tiny API", "C:\\javaSummer\\github-references\\mall-tiny\\src\\main\\java\\com\\macro\\mall\\tiny\\common\\api", "看 CommonResult、ResultCode，模仿统一返回。"],
+          ["mall-tiny exception", "C:\\javaSummer\\github-references\\mall-tiny\\src\\main\\java\\com\\macro\\mall\\tiny\\common\\exception", "看 GlobalExceptionHandler 思想，写你的简化版。"],
+          ["RuoYi-Vue-Plus common", "C:\\javaSummer\\github-references\\RuoYi-Vue-Plus\\ruoyi-common", "只看通用模块分层和命名，不要追它全部框架。"]
+        ],
+        borrow: ["Controller 只接收参数和返回结果", "Service 写业务", "DTO/VO 区分入参和出参"],
+        avoid: "不要把后台管理系统全部搬进来；今天只做 CRUD 的工程骨架。",
+        output: "Spring Boot CRUD 项目，含统一返回、参数校验、全局异常。"
+      },
+      "后端项目启动": {
+        watch: [
+          ["mall pms", "C:\\javaSummer\\github-references\\mall\\mall-admin\\src\\main\\java\\com\\macro\\mall\\controller", "找商品、订单相关 Controller，看接口命名和分页参数。"],
+          ["mall model", "C:\\javaSummer\\github-references\\mall\\mall-mbg\\src\\main\\java\\com\\macro\\mall\\model", "看商品、订单、用户实体字段，抽成你的校园二手交易简化版。"],
+          ["mall SQL", "C:\\javaSummer\\github-references\\mall\\document\\sql", "参考商品、订单、会员表设计。"]
+        ],
+        borrow: ["商品、分类、订单、订单项分表", "订单保存商品快照", "库存扣减必须做边界判断"],
+        avoid: "不要追求电商全功能；你的目标是跑通发布商品、下单、取消订单闭环。",
+        output: "campus-market 后端雏形：用户、商品、分类、订单基础接口。"
+      },
+      "登录鉴权与 Redis": {
+        watch: [
+          ["RuoYi security/auth", "C:\\javaSummer\\github-references\\RuoYi-Vue-Plus\\ruoyi-admin", "看登录入口、权限校验、配置组织方式。"],
+          ["mall-tiny security", "C:\\javaSummer\\github-references\\mall-tiny\\src\\main\\java\\com\\macro\\mall\\tiny\\security", "重点看 JwtTokenUtil、过滤器、无权限返回处理。"],
+          ["mall security", "C:\\javaSummer\\github-references\\mall\\mall-security\\src\\main\\java\\com\\macro\\mall\\security", "看权限和 JWT 组件如何拆分。"]
+        ],
+        borrow: ["密码不能明文保存", "JWT 解析后拿到当前用户", "普通用户和管理员接口要分开"],
+        avoid: "不要上来硬啃完整 Spring Security；先做一个你能讲清楚的轻量鉴权链路。",
+        output: "注册登录、JWT 拦截、角色权限、Redis 商品缓存。"
+      },
+      "工程化": {
+        watch: [
+          ["mall Docker", "C:\\javaSummer\\github-references\\mall", "看 Dockerfile、docker-compose、README 启动说明怎么写。"],
+          ["mall-tiny Docker", "C:\\javaSummer\\github-references\\mall-tiny", "看最小 Docker Compose 组织。"],
+          ["RuoYi scripts", "C:\\javaSummer\\github-references\\RuoYi-Vue-Plus\\script", "看 SQL、部署脚本、配置文件怎么放。"]
+        ],
+        borrow: ["README 写清环境、启动、接口", "docker-compose 管理 MySQL/Redis", "日志和错误码要统一"],
+        avoid: "不要追求上云和 K8s；先保证换一台电脑能按 README 跑起来。",
+        output: "Docker 化、本地一键启动、接口文档、核心测试。"
+      },
+      "AI Agent 加分": {
+        watch: [
+          ["spring-ai-alibaba examples", "C:\\javaSummer\\github-references\\spring-ai-alibaba\\examples", "看 Chat、RAG、tool calling 示例，优先找能跑的最小样例。"],
+          ["spring-ai-alibaba agent framework", "C:\\javaSummer\\github-references\\spring-ai-alibaba\\spring-ai-alibaba-agent-framework", "了解 Agent 模块概念，不要一开始改框架源码。"],
+          ["langchain4j examples", "C:\\javaSummer\\github-references\\langchain4j-examples", "看 RAG、customer-support-agent、向量库示例，转成你的 Java 后端模块。"]
+        ],
+        borrow: ["先普通 chat，再文档切分，再检索，再 RAG 回答", "工具调用只做只读查询", "AI 模块要有评测问题"],
+        avoid: "不要试图训练大模型；你要做的是把模型接进业务系统。",
+        output: "校园交易智能客服：资料问答 + 商品/订单只读查询工具。"
+      },
+      "简历化与面试准备": {
+        watch: [
+          ["JavaGuide interview", "C:\\javaSummer\\github-references\\JavaGuide\\docs", "按 Java、MySQL、Redis、Spring、计网、OS 查漏补缺。"],
+          ["mall README", "C:\\javaSummer\\github-references\\mall\\README.md", "参考成熟项目 README 的技术栈、模块、部署说明写法。"],
+          ["RuoYi README", "C:\\javaSummer\\github-references\\RuoYi-Vue-Plus\\README.md", "参考后台系统功能点描述方式。"]
+        ],
+        borrow: ["项目亮点要对应真实代码", "八股要能映射到项目场景", "README 和简历描述保持一致"],
+        avoid: "不要写空泛的熟悉/了解；每条能力都落到项目功能上。",
+        output: "可投实习的简历、项目 README、面试问答清单、演示截图。"
+      }
+    };
+
+    const plan = {
+      "2026-07-10": day("能力校准", "建立仓库与第一个学生管理小程序", "JavaGuide 基础语法、集合章节", [
+        ["建仓库", "创建 summer-java-backend 仓库，写 README：目标、每日节奏、技术栈。"],
+        ["学生管理 v0", "用 ArrayList 写 Student 增删改查、按学号查询、列表展示。"],
+        ["算法", "数组 2 题：两数之和、移除元素，用 Java 手写。"],
+        ["复盘", "记录你从空文件开始最卡的 3 个点。"]
+      ]),
+      "2026-07-11": day("能力校准", "登录与商品列表两个小程序", "JavaGuide 面向对象、异常章节", [
+        ["简易登录", "写 User、UserService，实现注册、登录、密码校验、失败提示。"],
+        ["商品列表", "写 Product 管理：添加、搜索、按价格排序、扣减库存。"],
+        ["算法", "哈希表 1-2 题：有效的字母异位词、两个数组交集。"],
+        ["复盘", "把 Student/User/Product 的字段设计差异写进笔记。"]
+      ]),
+
+      "2026-07-13": day("Java 手写能力强化", "学生管理系统 v1 骨架", "mall 的包命名与分层方式", [
+        ["项目拆包", "建立 domain、service、repository、ui 四层，不接 Spring。"],
+        ["实体类", "写 Student、Course、User，字段、构造器、getter/setter 自己完成。"],
+        ["菜单循环", "写控制台菜单：新增、删除、修改、查询、退出。"],
+        ["算法", "链表 1 题：反转链表。"]
+      ]),
+      "2026-07-14": day("Java 手写能力强化", "业务层与异常", "JavaGuide 异常处理章节", [
+        ["StudentService", "实现新增、删除、修改、按学号查、按姓名模糊查。"],
+        ["BizException", "处理重复学号、查无数据、参数为空，不直接 printStackTrace。"],
+        ["变式", "把学生管理改写成图书管理 BookService。"],
+        ["算法", "链表 1 题：合并两个有序链表。"]
+      ]),
+      "2026-07-15": day("Java 手写能力强化", "集合与排序搜索", "JavaGuide 集合章节", [
+        ["分页查询", "实现 pageNo/pageSize 的内存分页。"],
+        ["排序", "按年龄、学号、姓名排序，练 Comparator。"],
+        ["Stream", "用 Stream 写统计：人数、平均年龄、按年级分组。"],
+        ["算法", "字符串 1-2 题：反转字符串、左旋转字符串。"]
+      ]),
+      "2026-07-16": day("Java 手写能力强化", "文件持久化", "JavaGuide IO 章节", [
+        ["保存数据", "把学生列表保存到本地文件，程序重启后能读取。"],
+        ["导入导出", "支持导出 students.csv，支持从 csv 导入。"],
+        ["边界条件", "处理空文件、重复数据、格式错误。"],
+        ["算法", "栈 1 题：有效的括号。"]
+      ]),
+      "2026-07-17": day("Java 手写能力强化", "订单小程序变式", "mall 的订单领域概念", [
+        ["订单实体", "写 Order、OrderItem、Product，完成创建订单、计算金额。"],
+        ["库存扣减", "下单时扣库存，库存不足抛业务异常。"],
+        ["状态流转", "订单状态：待支付、已取消、已完成。"],
+        ["算法", "队列/栈 1 题：用栈实现队列。"]
+      ]),
+      "2026-07-18": day("Java 手写能力强化", "周验收：独立默写", "前 5 天自己的代码", [
+        ["默写", "不看旧代码，2 小时内重写学生管理核心功能。"],
+        ["整理", "把学生、商品、订单三个小程序放进同一个仓库。"],
+        ["README", "写运行方式、功能列表、你踩过的坑。"],
+        ["算法", "本周错题复刷 3 题。"]
+      ]),
+
+      "2026-07-20": day("数据库 + MyBatis", "MySQL 表设计与 SQL", "mall 的 ums/pms/oms 表命名", [
+        ["建表", "设计 user、student、course、student_course 四张表。"],
+        ["SQL", "写增删改查、排序、分页、count、like 查询。"],
+        ["索引", "给学号、用户名、课程名设计索引并说明理由。"],
+        ["算法", "二叉树 1 题：前序遍历。"]
+      ]),
+      "2026-07-21": day("数据库 + MyBatis", "JDBC 到 MyBatis", "MyBatis 官方入门或你已有笔记", [
+        ["JDBC", "用 JDBC 完成 student 表新增与查询，理解连接、Statement、ResultSet。"],
+        ["MyBatis", "创建 Maven 项目，接入 MyBatis 和 MySQL 驱动。"],
+        ["Mapper", "写 StudentMapper：insert、delete、update、selectById。"],
+        ["算法", "二叉树 1 题：最大深度。"]
+      ]),
+      "2026-07-22": day("数据库 + MyBatis", "条件查询与分页", "mall 的 Mapper 查询写法", [
+        ["组合查询", "按姓名、年级、课程组合筛选学生。"],
+        ["分页", "手写 limit 分页，理解 offset 的问题。"],
+        ["DTO", "写 StudentQueryDTO 承载查询参数。"],
+        ["算法", "二分查找 1 题。"]
+      ]),
+      "2026-07-23": day("数据库 + MyBatis", "事务与订单", "mall 的订单模块思想", [
+        ["订单表", "设计 product、order、order_item 三张表。"],
+        ["事务", "创建订单时同时写订单、订单项、扣库存，失败要回滚。"],
+        ["边界", "测试库存不足、商品不存在、订单金额为 0。"],
+        ["算法", "二分 1 题：搜索插入位置。"]
+      ]),
+      "2026-07-24": day("数据库 + MyBatis", "Repository 小项目整合", "自己的学生/商品/订单代码", [
+        ["整合", "把前面的内存版 repository 替换成 MyBatis 版。"],
+        ["测试数据", "准备 20 条学生、20 条商品、5 条订单数据。"],
+        ["查询练习", "写 10 条业务 SQL 并放入 README。"],
+        ["算法", "哈希表错题复刷 2 题。"]
+      ]),
+      "2026-07-25": day("数据库 + MyBatis", "周验收：MySQL 版学生管理", "JavaGuide MySQL 面试题", [
+        ["独立实现", "不看旧代码，重建一个 MySQL 版学生管理 CRUD。"],
+        ["笔记", "整理主键、索引、事务、分页、连接查询 5 个知识点。"],
+        ["提交", "GitHub 至少 1 次有意义提交，写清楚完成内容。"],
+        ["算法", "本周错题复刷 3 题。"]
+      ]),
+
+      "2026-07-27": day("Spring Boot 过渡", "创建第一个 Spring Boot CRUD", "RuoYi-Vue-Plus 的分层与统一返回", [
+        ["初始化", "创建 Spring Boot 项目，接入 Web、MyBatis、MySQL。"],
+        ["分层", "建立 controller、service、mapper、domain、dto、vo。"],
+        ["接口", "完成 /students 新增和 /students/{id} 查询。"],
+        ["算法", "二叉树层序遍历 1 题。"]
+      ]),
+      "2026-07-28": day("Spring Boot 过渡", "统一返回与异常处理", "RuoYi-Vue-Plus 错误码风格", [
+        ["Result", "实现 Result<T>，包含 code、message、data。"],
+        ["全局异常", "实现 GlobalExceptionHandler 和 BizException。"],
+        ["校验", "DTO 加 @NotBlank、@NotNull，处理参数错误。"],
+        ["算法", "栈/队列 1 题：滑动窗口最大值可先看思路再写。"]
+      ]),
+      "2026-07-29": day("Spring Boot 过渡", "学生 CRUD 完整接口", "Spring Boot 文档中的 REST 思路", [
+        ["CRUD", "完成新增、删除、修改、详情、分页列表。"],
+        ["VO", "返回 StudentVO，不把数据库实体直接暴露给前端。"],
+        ["接口测试", "用 Apifox 或 Postman 保存全部接口。"],
+        ["算法", "回溯入门 1 题：组合。"]
+      ]),
+      "2026-07-30": day("Spring Boot 过渡", "用户注册登录雏形", "mall 的会员模块概念", [
+        ["用户表", "设计 user 表，字段包含 username、password、role、status。"],
+        ["注册", "完成注册接口，校验用户名重复。"],
+        ["登录", "完成登录接口，先返回简单 token 字符串。"],
+        ["算法", "贪心 1 题：分发饼干。"]
+      ]),
+      "2026-07-31": day("Spring Boot 过渡", "接口文档与 README", "优秀开源项目 README", [
+        ["接口文档", "接入 SpringDoc 或整理 Apifox 文档截图。"],
+        ["README", "写项目背景、技术栈、启动方式、接口列表。"],
+        ["自测", "把所有接口跑一遍，修掉明显 bug。"],
+        ["算法", "动态规划入门 1 题：斐波那契或爬楼梯。"]
+      ]),
+      "2026-08-01": day("Spring Boot 过渡", "周验收：独立重写 CRUD", "本周自己的 Spring Boot 代码", [
+        ["默写", "从空项目开始，2-3 小时内写出一个 Spring Boot CRUD。"],
+        ["复盘", "列出 Controller、Service、Mapper、DTO、VO 的职责。"],
+        ["提交", "打一个 v0.1 tag 或写周总结。"],
+        ["算法", "本周错题复刷 3 题。"]
+      ]),
+
+      "2026-08-03": day("后端项目启动", "校园二手交易项目建模", "macrozheng/mall 的商品和订单模块", [
+        ["定题", "确定项目名，例如 campus-market，写功能范围。"],
+        ["建模", "设计 user、category、product、order、order_item 表。"],
+        ["骨架", "创建 Spring Boot 项目并接入 MySQL。"],
+        ["算法", "数组双指针 1 题。"]
+      ]),
+      "2026-08-04": day("后端项目启动", "商品模块", "mall 的 pms 商品模块", [
+        ["商品发布", "完成商品发布、编辑、下架接口。"],
+        ["商品列表", "支持关键词、分类、价格区间、分页查询。"],
+        ["商品详情", "返回卖家信息、库存、状态。"],
+        ["算法", "哈希表 1 题。"]
+      ]),
+      "2026-08-05": day("后端项目启动", "分类与搜索", "mall 的分类设计", [
+        ["分类", "完成分类新增、修改、列表、删除。"],
+        ["搜索", "商品列表支持分类筛选和按发布时间排序。"],
+        ["边界", "分类下有商品时禁止删除或给出明确策略。"],
+        ["算法", "二叉树 1 题。"]
+      ]),
+      "2026-08-06": day("后端项目启动", "订单创建", "mall 的 oms 订单模块", [
+        ["创建订单", "实现 createOrder：校验商品、库存、用户、价格。"],
+        ["订单项", "写 order_item，保存商品快照。"],
+        ["库存", "下单扣库存，库存不足返回业务错误。"],
+        ["算法", "二分 1 题。"]
+      ]),
+      "2026-08-07": day("后端项目启动", "订单查询与取消", "mall 的订单状态流转", [
+        ["订单列表", "用户查询自己的订单，管理员查询全部订单。"],
+        ["取消订单", "取消时恢复库存，注意重复取消。"],
+        ["状态机", "整理待支付、已取消、已完成的允许流转。"],
+        ["算法", "栈队列 1 题。"]
+      ]),
+      "2026-08-08": day("后端项目启动", "周验收：基础项目跑通", "mall + 自己的 README", [
+        ["联调", "从注册、发布商品、下单、取消订单完整跑通。"],
+        ["测试数据", "准备一组演示数据和接口调用截图。"],
+        ["README", "更新项目结构、接口列表、数据库表说明。"],
+        ["算法", "本周错题复刷 3 题。"]
+      ]),
+
+      "2026-08-10": day("登录鉴权与 Redis", "正式登录注册", "RuoYi-Vue-Plus 权限思路", [
+        ["密码加密", "接入 BCrypt 或等价方案，不存明文密码。"],
+        ["注册登录", "完善注册、登录、退出、获取当前用户接口。"],
+        ["用户状态", "增加禁用用户不能登录的判断。"],
+        ["算法", "动态规划入门 1 题。"]
+      ]),
+      "2026-08-11": day("登录鉴权与 Redis", "JWT 与拦截器", "Spring Security 或轻量拦截器资料", [
+        ["JWT", "登录成功签发 token，包含 userId、role、过期时间。"],
+        ["拦截器", "校验 token，解析当前用户，上下文保存 userId。"],
+        ["保护接口", "发布商品、下单必须登录。"],
+        ["算法", "回溯 1 题。"]
+      ]),
+      "2026-08-12": day("登录鉴权与 Redis", "角色权限", "RuoYi-Vue-Plus 的角色权限模型", [
+        ["角色", "区分 USER、ADMIN。"],
+        ["权限", "管理员才能审核商品、下架违规商品。"],
+        ["注解", "尝试写 @RequireRole 或用拦截器集中处理。"],
+        ["算法", "贪心 1 题。"]
+      ]),
+      "2026-08-13": day("登录鉴权与 Redis", "Redis 缓存", "mall 的 Redis 使用场景", [
+        ["接入 Redis", "本地启动 Redis，Spring Boot 配置连接。"],
+        ["缓存商品详情", "商品详情先查缓存，未命中查库再写缓存。"],
+        ["缓存失效", "商品编辑、下架后删除对应缓存。"],
+        ["算法", "链表错题 1-2 题。"]
+      ]),
+      "2026-08-14": day("登录鉴权与 Redis", "限流与防重复", "Redis 常见应用", [
+        ["登录限流", "同一用户名或 IP 连续失败次数过多时限制。"],
+        ["重复提交", "下单接口用简单 token 或 Redis 防重复提交。"],
+        ["复盘", "写清楚缓存穿透、击穿、雪崩的区别。"],
+        ["算法", "MySQL/Redis 八股整理 10 问。"]
+      ]),
+      "2026-08-15": day("登录鉴权与 Redis", "周验收：可投项目雏形", "自己的项目完整链路", [
+        ["演示链路", "注册、登录、发布商品、商品详情缓存、下单、取消订单全部跑通。"],
+        ["README", "加入鉴权、Redis、权限说明。"],
+        ["提交", "打 v0.2 tag 或写周总结。"],
+        ["算法", "本周错题复刷 3 题。"]
+      ]),
+
+      "2026-08-17": day("工程化", "Docker 化", "mall 的 docker-compose 组织方式", [
+        ["Dockerfile", "为后端项目写 Dockerfile。"],
+        ["Compose", "写 docker-compose.yml，包含 MySQL、Redis、后端服务。"],
+        ["配置", "把数据库、Redis 配置改成环境变量可配置。"],
+        ["算法", "数组/哈希复刷 2 题。"]
+      ]),
+      "2026-08-18": day("工程化", "日志与错误码", "RuoYi-Vue-Plus 的异常处理风格", [
+        ["日志", "给登录、下单、扣库存、取消订单加关键日志。"],
+        ["错误码", "整理参数错误、权限错误、库存不足、资源不存在。"],
+        ["异常", "所有业务错误走统一异常，不散落 return。"],
+        ["算法", "栈队列复刷 1 题。"]
+      ]),
+      "2026-08-19": day("工程化", "接口文档", "SpringDoc 或 Apifox", [
+        ["SpringDoc", "接入 OpenAPI 文档或完善 Apifox 集合。"],
+        ["示例", "为核心接口补请求示例和响应示例。"],
+        ["截图", "保存 5 张关键接口截图到 docs 目录。"],
+        ["算法", "二叉树复刷 1 题。"]
+      ]),
+      "2026-08-20": day("工程化", "单元测试", "JUnit + Mockito 基础", [
+        ["Service 测试", "给注册、创建订单、取消订单写测试。"],
+        ["边界测试", "库存不足、重复用户名、无权限下架商品。"],
+        ["修 bug", "根据测试暴露的问题调整代码。"],
+        ["算法", "二分/回溯复刷 1 题。"]
+      ]),
+      "2026-08-21": day("工程化", "部署与启动说明", "优秀开源项目 README", [
+        ["一键启动", "保证 docker compose up 后能启动依赖服务。"],
+        ["启动文档", "README 写清 JDK、Maven、MySQL、Redis、Docker 启动方式。"],
+        ["演示账号", "准备普通用户和管理员账号。"],
+        ["算法", "动态规划入门复刷 1 题。"]
+      ]),
+      "2026-08-22": day("工程化", "周验收：工程化版本", "自己的项目 v0.3", [
+        ["验收", "换一个空数据库，按 README 从零启动项目。"],
+        ["整理", "补齐接口文档、环境变量、常见问题。"],
+        ["提交", "打 v0.3 tag 或写周总结。"],
+        ["算法", "本周错题复刷 3 题。"]
+      ]),
+
+      "2026-08-24": day("AI Agent 加分", "AI 模块定题与接入", "spring-ai-alibaba examples", [
+        ["定题", "AI 客服：回答交易规则、商品信息、订单状态。"],
+        ["接入模型", "用 Spring AI Alibaba 或 LangChain4j 跑通一次 chat 调用。"],
+        ["接口", "新增 /ai/chat 接口，先完成普通对话。"],
+        ["算法", "高频数组题 1 题。"]
+      ]),
+      "2026-08-25": day("AI Agent 加分", "知识库资料上传", "langchain4j RAG examples", [
+        ["资料", "准备交易规则、项目 README、课程资料 Markdown。"],
+        ["上传", "实现上传 Markdown 文本并保存文档记录。"],
+        ["切分", "按标题或固定长度切分文本，保存 chunk。"],
+        ["算法", "高频哈希题 1 题。"]
+      ]),
+      "2026-08-26": day("AI Agent 加分", "向量检索", "spring-ai-alibaba RAG 示例", [
+        ["Embedding", "接入 embedding 模型。"],
+        ["向量库", "用可运行的方案保存向量，简单起步也可以先用内存检索。"],
+        ["TopK", "实现 query -> topK chunks 检索。"],
+        ["算法", "高频二叉树题 1 题。"]
+      ]),
+      "2026-08-27": day("AI Agent 加分", "RAG 问答", "RAG prompt 示例", [
+        ["Prompt", "把检索到的片段拼入 prompt，要求回答引用依据。"],
+        ["接口", "实现 /ai/knowledge/ask。"],
+        ["评测", "准备 10 个问题，记录命中情况和错误回答。"],
+        ["算法", "高频二分题 1 题。"]
+      ]),
+      "2026-08-28": day("AI Agent 加分", "工具调用", "MCP / tool calling 示例", [
+        ["只读工具", "让 AI 能查询商品库存、订单状态、商品详情。"],
+        ["权限", "AI 查询订单必须校验当前登录用户。"],
+        ["安全", "禁止 AI 执行修改类操作，只做只读查询。"],
+        ["算法", "高频动态规划题 1 题。"]
+      ]),
+      "2026-08-29": day("AI Agent 加分", "周验收：AI 项目亮点", "spring-ai-alibaba + 自己项目", [
+        ["演示", "录制或截图：上传资料、提问、引用知识、查询订单状态。"],
+        ["README", "增加 AI 模块架构、RAG 流程、工具调用说明。"],
+        ["提交", "打 v0.4 tag 或写周总结。"],
+        ["算法", "本周错题复刷 3 题。"]
+      ]),
+
+      "2026-08-31": day("简历化与面试准备", "项目 README 精修", "优秀开源项目 README", [
+        ["README", "补项目背景、技术栈、架构图、启动方式、接口文档链接。"],
+        ["截图", "补接口截图、数据库表图、AI 问答截图。"],
+        ["架构图", "画用户、商品、订单、Redis、AI 模块关系图。"],
+        ["算法", "数组/哈希高频复刷 2 题。"]
+      ]),
+      "2026-09-01": day("简历化与面试准备", "简历项目描述", "JavaGuide 简历项目写法参考", [
+        ["项目亮点", "写 4 条亮点：JWT 鉴权、Redis 缓存、订单一致性、RAG 问答。"],
+        ["量化", "尽量写清接口数量、表数量、测试数量、模块数量。"],
+        ["避坑", "删除空泛描述，例如熟悉、了解、负责若干。"],
+        ["算法", "链表/栈队列高频复刷 2 题。"]
+      ]),
+      "2026-09-02": day("简历化与面试准备", "Java 八股", "JavaGuide Java/JVM/并发章节", [
+        ["Java", "整理集合、异常、泛型、Stream、反射各 2 问。"],
+        ["JVM", "整理内存区域、GC、类加载 6 问。"],
+        ["并发", "整理线程池、锁、volatile、synchronized 8 问。"],
+        ["算法", "二叉树高频复刷 2 题。"]
+      ]),
+      "2026-09-03": day("简历化与面试准备", "MySQL + Redis 八股", "JavaGuide 数据库与缓存章节", [
+        ["MySQL", "整理索引、事务、隔离级别、慢查询、分页优化。"],
+        ["Redis", "整理缓存穿透、击穿、雪崩、过期策略、数据类型。"],
+        ["项目映射", "把每个八股点对应到你的项目里。"],
+        ["算法", "二分/回溯高频复刷 2 题。"]
+      ]),
+      "2026-09-04": day("简历化与面试准备", "Spring + 计网 + 操作系统", "JavaGuide Spring/计网/OS 章节", [
+        ["Spring", "整理 IOC、AOP、事务、Bean 生命周期、拦截器。"],
+        ["计网", "整理 HTTP、HTTPS、TCP 三次握手、状态码。"],
+        ["OS", "整理进程线程、内存、IO、多路复用基础。"],
+        ["算法", "动态规划高频复刷 2 题。"]
+      ]),
+      "2026-09-05": day("简历化与面试准备", "最终验收与投递准备", "自己的简历和 GitHub", [
+        ["最终检查", "从零启动项目，按 README 跑一遍完整演示。"],
+        ["模拟讲解", "口述 5 分钟：项目背景、架构、难点、AI 模块。"],
+        ["投递包", "准备简历 PDF、GitHub 链接、项目截图、面试问答文档。"],
+        ["算法", "整理暑假错题清单，标出还不稳的题型。"]
+      ])
+    };
+
+    function day(phase, goal, repo, tasks) {
+      return { phase, goal, repo, tasks };
+    }
+
+    function parseDate(value) {
+      const [year, month, date] = value.split("-").map(Number);
+      return new Date(year, month - 1, date);
+    }
+
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const dayValue = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${dayValue}`;
+    }
+
+    function clampDate(value) {
+      if (value < START) return START;
+      if (value > END) return END;
+      return value;
+    }
+
+    function isSunday(value) {
+      return parseDate(value).getDay() === 0;
+    }
+
+    function weekdayName(value) {
+      return ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][parseDate(value).getDay()];
+    }
+
+    function getPhase(value) {
+      return phases.find(([from, to]) => value >= from && value <= to);
+    }
+
+    function storageKey(dateValue, index) {
+      return `java-career-plan:${dateValue}:${index}`;
+    }
+
+    function plannedDates() {
+      return Object.keys(plan).sort();
+    }
+
+    const datePicker = document.querySelector("#datePicker");
+    const phasePicker = document.querySelector("#phasePicker");
+    const todayPanel = document.querySelector("#todayPanel");
+    const weekPanel = document.querySelector("#weekPanel");
+    const guidePanel = document.querySelector("#guidePanel");
+    const progressBar = document.querySelector("#progressBar");
+    const progressText = document.querySelector("#progressText");
+
+    function initPhasePicker() {
+      phasePicker.innerHTML = phases.map(([from, to, title]) => (
+        `<option value="${from}">${from.slice(5)}-${to.slice(5)} ${title}</option>`
+      )).join("");
+    }
+
+    function renderGithubGuide(item) {
+      const guide = githubGuides[item.phase];
+      if (!guide) return "";
+
+      const watchHtml = guide.watch.map(([name, path, detail], index) => `
+        <div class="github-card">
+          <strong>${index + 1}. ${name}</strong>
+          <code>${path}</code>
+          <small>${detail}</small>
+        </div>
+      `).join("");
+
+      const borrowHtml = guide.borrow.map(point => `<li>${point}</li>`).join("");
+      const firstRepo = guide.watch[0];
+      const secondRepo = guide.watch[1] || guide.watch[0];
+      const thirdRepo = guide.watch[2] || guide.watch[0];
+
+      return `
+        <div class="github-box">
+          <h3>GitHub 今日指导</h3>
+          <p>今天不要从仓库首页随便翻。按下面顺序打开文件，带着问题看，然后立刻回到自己的代码里复写。</p>
+          <div class="github-grid">${watchHtml}</div>
+          <div class="guide-section">
+            <h4>阅读顺序</h4>
+            <ol>
+              <li>先看 <strong>${firstRepo[0]}</strong>，只看和今天任务直接相关的类、接口或 README。</li>
+              <li>再看 <strong>${secondRepo[0]}</strong>，观察它如何命名包、类、方法和返回对象。</li>
+              <li>最后看 <strong>${thirdRepo[0]}</strong>，用来校对算法、结构或工程习惯。</li>
+            </ol>
+          </div>
+          <div class="guide-section">
+            <h4>读代码只回答 4 个问题</h4>
+            <ul>
+              <li>这个类负责什么？它不负责什么？</li>
+              <li>它的输入、输出、异常分别是什么？</li>
+              <li>如果搬到你的项目里，应该放在 model、service、mapper、controller 还是 app？</li>
+              <li>有没有一个更小的版本，今天 30 分钟内能自己写出来？</li>
+            </ul>
+          </div>
+          <div class="guide-section">
+            <h4>照着改到你的项目</h4>
+            <ol>
+              <li>在 <code>C:\\javaSummer\\summer-java-backend</code> 新建或修改今天的目录。</li>
+              <li>先模仿命名和职责分层，不要复制整段代码。</li>
+              <li>关掉参考仓库，从空文件写一遍同类功能。</li>
+              <li>换一个业务场景做变式，例如学生改商品、登录改订单、商品改图书。</li>
+              <li>晚上把“借鉴了什么、自己改了什么、还不会什么”写进复盘。</li>
+            </ol>
+          </div>
+          <div class="guide-section">
+            <h4>今天借鉴</h4>
+            <ul>${borrowHtml}</ul>
+          </div>
+          <div class="guide-section">
+            <h4>边界</h4>
+            <p><strong>今天不要做：</strong>${guide.avoid}</p>
+            <p><strong>验收产出：</strong>${guide.output}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderToday(value) {
+      const dateValue = clampDate(value);
+      datePicker.value = dateValue;
+      const item = plan[dateValue];
+
+      if (isSunday(dateValue)) {
+        guidePanel.innerHTML = `
+          <div class="github-box">
+            <h3>休息日整理</h3>
+            <p>今天不安排硬任务。可以整理仓库、检查 README、清理桌面，把下周第一天要打开的 GitHub 路径提前收藏。</p>
+            <div class="guide-section">
+              <h4>轻量回顾</h4>
+              <ul>
+                <li>看一眼本周提交记录，不补代码。</li>
+                <li>把没写完的卡点记到明天任务里。</li>
+                <li>确认桌面“学习任务便签”还能正常打开。</li>
+              </ul>
+            </div>
+          </div>
+        `;
+        todayPanel.innerHTML = `
+          <div class="topline">
+            <div>
+              <h2>${dateValue} ${weekdayName(dateValue)}</h2>
+              <p class="phase">正式休息日</p>
+            </div>
+            <span class="tag warn">休息</span>
+          </div>
+          <p>今天不安排硬任务。晚上可以用 30 分钟看一眼下周任务、整理桌面和仓库，但不要把休息日变成补课日。</p>
+        `;
+        renderWeek(dateValue);
+        updateProgress();
+        return;
+      }
+
+      if (!item) {
+        guidePanel.innerHTML = "";
+        todayPanel.innerHTML = `<p class="empty">这个日期没有任务。计划范围是 ${START} 到 ${END}。</p>`;
+        renderWeek(dateValue);
+        updateProgress();
+        return;
+      }
+
+      const taskHtml = item.tasks.map(([title, detail], index) => {
+        const checked = localStorage.getItem(storageKey(dateValue, index)) === "1" ? "checked" : "";
+        return `
+          <li class="task">
+            <input type="checkbox" data-index="${index}" ${checked} aria-label="${title}" />
+            <div><strong>${title}</strong><small>${detail}</small></div>
+          </li>
+        `;
+      }).join("");
+
+      todayPanel.innerHTML = `
+        <div class="topline">
+          <div>
+            <h2>${dateValue} ${weekdayName(dateValue)}：${item.goal}</h2>
+            <p class="phase">${item.phase}</p>
+          </div>
+          <span class="tag blue">今天必须写代码</span>
+        </div>
+        <div class="meta">
+          <span class="tag">少看多写</span>
+          <span class="tag blue">复现 + 变式 + 独立实现</span>
+          <span class="tag warn">不要只收藏路线图</span>
+        </div>
+        <div class="time-grid">
+          ${timeBlocks.map(([time, title, detail]) => `<div class="time-block"><strong>${time} ${title}</strong><small>${detail}</small></div>`).join("")}
+        </div>
+        <ul class="task-list">${taskHtml}</ul>
+        <div class="inline-guide">${renderGithubGuide(item)}</div>
+        <div class="repo-box"><strong>参考项目/资料：</strong>${item.repo}</div>
+        <div class="note-box"><strong>今晚复盘模板：</strong>今天我卡在了哪 3 个点？明天能不能不看代码默写？这个功能能不能换一个业务场景再写一遍？</div>
+      `;
+
+      guidePanel.innerHTML = renderGithubGuide(item);
+
+      todayPanel.querySelectorAll("input[type='checkbox']").forEach(input => {
+        input.addEventListener("change", () => {
+          localStorage.setItem(storageKey(dateValue, input.dataset.index), input.checked ? "1" : "0");
+          updateProgress();
+        });
+      });
+
+      const phase = getPhase(dateValue);
+      if (phase) phasePicker.value = phase[0];
+      renderWeek(dateValue);
+      updateProgress();
+    }
+
+    function renderWeek(dateValue) {
+      const phase = getPhase(dateValue);
+      if (!phase) {
+        weekPanel.innerHTML = "";
+        return;
+      }
+
+      const [from, to, title] = phase;
+      const cards = [];
+      let current = parseDate(from);
+      const end = parseDate(to);
+      while (current <= end) {
+        const value = formatDate(current);
+        const item = plan[value];
+        if (item) {
+          cards.push(`
+            <article class="day-card ${value === dateValue ? "active" : ""}">
+              <h3>${value.slice(5)} ${weekdayName(value)}</h3>
+              <ul>
+                <li>${item.goal}</li>
+                <li>${item.tasks[0][0]}</li>
+                <li>${item.tasks[item.tasks.length - 1][0]}</li>
+              </ul>
+            </article>
+          `);
+        }
+        current = new Date(current.getTime() + MS_DAY);
+      }
+
+      weekPanel.innerHTML = `
+        <h2>阶段总览：${title}</h2>
+        <p>范围：${from} 到 ${to}。周日休息，周一到周六每天至少 6 小时。</p>
+        <div class="days">${cards.join("")}</div>
+      `;
+    }
+
+    function updateProgress() {
+      let total = 0;
+      let done = 0;
+      plannedDates().forEach(dateValue => {
+        plan[dateValue].tasks.forEach((_, index) => {
+          total += 1;
+          if (localStorage.getItem(storageKey(dateValue, index)) === "1") done += 1;
+        });
+      });
+      const pct = total ? Math.round(done / total * 100) : 0;
+      progressBar.style.width = `${pct}%`;
+      progressText.textContent = `${done} / ${total}，完成 ${pct}%`;
+    }
+
+    function moveDate(delta) {
+      const current = parseDate(datePicker.value || START);
+      const next = formatDate(new Date(current.getTime() + delta * MS_DAY));
+      renderToday(clampDate(next));
+    }
+
+    function resetCurrentDay() {
+      const dateValue = datePicker.value;
+      const item = plan[dateValue];
+      if (!item) return;
+      item.tasks.forEach((_, index) => localStorage.removeItem(storageKey(dateValue, index)));
+      renderToday(dateValue);
+    }
+
+    function exportMarkdown() {
+      const lines = ["# Java 后端 + AI Agent 暑假每日任务", ""];
+      plannedDates().forEach(dateValue => {
+        const item = plan[dateValue];
+        const guide = githubGuides[item.phase];
+        lines.push(`## ${dateValue} ${weekdayName(dateValue)}：${item.goal}`);
+        lines.push(`阶段：${item.phase}`);
+        lines.push(`参考：${item.repo}`);
+        if (guide) {
+          lines.push("");
+          lines.push("### GitHub 今日指导");
+          guide.watch.forEach(([name, path, detail]) => {
+            lines.push(`- ${name}：${path}`);
+            lines.push(`  - ${detail}`);
+          });
+          lines.push(`- 今天不要做：${guide.avoid}`);
+          lines.push(`- 验收产出：${guide.output}`);
+        }
+        lines.push("");
+        item.tasks.forEach(([title, detail], index) => {
+          const checked = localStorage.getItem(storageKey(dateValue, index)) === "1" ? "x" : " ";
+          lines.push(`- [${checked}] ${title}：${detail}`);
+        });
+        lines.push("");
+      });
+      const blob = new Blob([lines.join("\n")], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "java-career-plan-progress.md";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.querySelector("#todayBtn").addEventListener("click", () => {
+      renderToday(clampDate(formatDate(new Date())));
+    });
+    document.querySelector("#prevBtn").addEventListener("click", () => moveDate(-1));
+    document.querySelector("#nextBtn").addEventListener("click", () => moveDate(1));
+    document.querySelector("#resetDayBtn").addEventListener("click", resetCurrentDay);
+    document.querySelector("#exportBtn").addEventListener("click", exportMarkdown);
+    datePicker.addEventListener("change", () => renderToday(datePicker.value));
+    phasePicker.addEventListener("change", () => renderToday(phasePicker.value));
+
+    initPhasePicker();
+    renderToday(clampDate(formatDate(new Date())));
+  </script>
+</body>
+</html>
